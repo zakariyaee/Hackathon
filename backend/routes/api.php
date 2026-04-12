@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\AuthController;
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+// Registration ouvert au public
+Route::post('/register', [TeamController::class, 'store']);
+
+// Routes protégées par l'authentification admin
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/teams', [TeamController::class, 'index']);
+    Route::get('/stats', [TeamController::class, 'stats']);
+    Route::get('/export', [TeamController::class, 'export']);
+    Route::put('/teams/{team}/status', [TeamController::class, 'updateStatus']);
+});
