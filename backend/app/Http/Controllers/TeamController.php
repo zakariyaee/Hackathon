@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Mail\TeamStatusUpdated;
+use App\Mail\TeamRegistrationConfirmation;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Str;
 
 class TeamController extends Controller
 {
@@ -26,20 +28,43 @@ class TeamController extends Controller
             'phone'       => 'required|string',
         ]);
 
+        $trackingNumber = $this->generateTrackingNumber();
+
         $team = Team::create([
-            'team_name'    => $validated['teamName'],
-            'member_count' => $validated['memberCount'],
-            'project_idea' => $validated['projectIdea'],
-            'leader_name'  => $validated['leaderName'],
-            'email'        => $validated['email'],
-            'phone'        => $validated['phone'],
-            'status'       => 'pending',
+            'team_name'       => $validated['teamName'],
+            'member_count'    => $validated['memberCount'],
+            'project_idea'    => $validated['projectIdea'],
+            'leader_name'     => $validated['leaderName'],
+            'email'           => $validated['email'],
+            'phone'           => $validated['phone'],
+            'status'          => 'pending',
+            'tracking_number' => $trackingNumber,
         ]);
 
+        // Envoyer l'e-mail de confirmation d'inscription
+        try {
+            Mail::to($team->email)->send(new TeamRegistrationConfirmation($team));
+        } catch (\Exception $e) {
+            \Log::error('Registration Email sending failed: ' . $e->getMessage());
+        }
+
         return response()->json([
-            'message' => 'Votre inscription a été reçue avec succès ! Veuillez patienter, le club Infotech du ENSA Tétouan  traitera votre demande dans les plus brefs délais.',
+            'message' => 'Votre inscription a été reçue avec succès ! Un e-mail de confirmation a été envoyé à ' . $team->email,
             'team' => $team,
         ], 201);
+    }
+
+    public function track($tracking_number)
+    {
+        $team = Team::where('tracking_number', $tracking_number)->first();
+
+        if (!$team) {
+            return response()->json([
+                'message' => 'Aucune demande trouvée avec ce numéro de suivi.'
+            ], 404);
+        }
+
+        return response()->json($team);
     }
 
     public function updateStatus(Request $request, Team $team)
@@ -106,5 +131,14 @@ class TeamController extends Controller
             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
             'Expires'             => '0',
         ]);
+    }
+
+    private function generateTrackingNumber()
+    {
+        do {
+            $code = 'HT-' . strtoupper(Str::random(5));
+        } while (Team::where('tracking_number', $code)->exists());
+
+        return $code;
     }
 }

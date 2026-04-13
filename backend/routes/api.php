@@ -14,6 +14,7 @@ Route::get('/user', function (Request $request) {
 
 // Registration ouvert au public
 Route::post('/register', [TeamController::class, 'store']);
+Route::get('/track/{tracking_number}', [TeamController::class, 'track']);
 
 // Routes protégées par l'authentification admin
 Route::middleware('auth:sanctum')->group(function () {

@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import Register from "./pages/Register.tsx";
 import Admin from "./pages/Admin.tsx";
 import Login from "./pages/Login.tsx";
+import TrackRegistration from "./pages/TrackRegistration.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import ScrollToHash from "./components/ScrollToHash.tsx";
@@ -23,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/track" element={<TrackRegistration />} />
           <Route path="/login" element={<Login />} />
           <Route 
             path="/admin" 

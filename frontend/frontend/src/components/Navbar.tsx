@@ -22,6 +22,7 @@ const Navbar = () => {
           <Link to="/#schedule" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Schedule</Link>
           <Link to="/#prizes" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Prizes</Link>
           <Link to="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+          <Link to="/track" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">Suivre mon inscription</Link>
           <Link to="/register">
             <Button size="sm" className="group">
               Register
@@ -41,6 +42,7 @@ const Navbar = () => {
           <Link to="/#schedule" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setIsOpen(false)}>Schedule</Link>
           <Link to="/#prizes" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setIsOpen(false)}>Prizes</Link>
           <Link to="/#contact" className="block text-sm text-muted-foreground hover:text-foreground" onClick={() => setIsOpen(false)}>Contact</Link>
+          <Link to="/track" className="block text-sm font-medium text-secondary" onClick={() => setIsOpen(false)}>Suivre mon inscription</Link>
           <Link to="/register" onClick={() => setIsOpen(false)}>
             <Button size="sm" className="w-full">Register</Button>
           </Link>

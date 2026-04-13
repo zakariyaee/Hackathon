@@ -14,5 +14,6 @@ class Team extends Model
         'email',
         'phone',
         'status',
+        'tracking_number',
     ];
 }

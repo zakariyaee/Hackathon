@@ -23,6 +23,7 @@ const Register = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedTeam, setSubmittedTeam] = useState<any>(null);
   const [form, setForm] = useState<Registration>({
     teamName: "",
     memberCount: "",
@@ -42,19 +43,20 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      await registerTeam({
+      const response = await registerTeam({
         ...form,
         memberCount: parseInt(form.memberCount),
       });
+      setSubmittedTeam(response.team);
       setSubmitted(true);
       toast({
         title: "Inscription envoyée !",
-        description: "Votre demande a été reçue. Le club organisateur va la traiter.",
+        description: "Votre demande a été reçue. Un e-mail de confirmation vous a été envoyé.",
       });
     } catch (error: any) {
       toast({ 
         title: "Registration Failed", 
-        description: error.message || "Something went wrong. Please try again.", 
+        description: error.response?.data?.message || error.message || "Something went wrong. Please try again.", 
         variant: "destructive" 
       });
     } finally {
@@ -83,11 +85,19 @@ const Register = () => {
             </span>
 
             <h2 className="font-heading text-3xl font-bold mb-4">Inscription reçue avec succès !</h2>
+            
+            {submittedTeam && (
+              <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest mb-1">Votre numéro de suivi</p>
+                <p className="font-mono text-xl font-bold text-secondary">{submittedTeam.tracking_number}</p>
+              </div>
+            )}
+
             <p className="text-muted-foreground mb-2 leading-relaxed">
               Votre inscription a bien été enregistrée. Veuillez patienter que le club organisateur traite votre demande.
             </p>
             <p className="text-sm text-muted-foreground mb-8">
-              Vous recevrez un e-mail de confirmation ou d'annulation à l'adresse fournie lors de l'inscription.
+              Vous recevrez un e-mail de confirmation ou d'annulation à l'adresse fournie lors de l'inscription (**{submittedTeam?.email}**).
             </p>
 
             {/* Info box */}

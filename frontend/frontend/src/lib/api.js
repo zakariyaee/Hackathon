@@ -38,6 +38,11 @@ export const registerTeam = async (teamData) => {
     return response.data;
 };
 
+export const trackTeam = async (trackingNumber) => {
+    const response = await api.get(`/track/${trackingNumber}`);
+    return response.data;
+};
+
 // Admin
 export const fetchTeams = async () => {
     const response = await api.get('/teams');
