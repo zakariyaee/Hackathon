@@ -44,8 +44,8 @@ export const trackTeam = async (trackingNumber) => {
 };
 
 // Admin
-export const fetchTeams = async () => {
-    const response = await api.get('/teams');
+export const fetchTeams = async (page = 1) => {
+    const response = await api.get(`/teams?page=${page}`);
     return response.data;
 };
 
@@ -59,6 +59,15 @@ export const updateTeamStatus = async (teamId, status) => {
     return response.data;
 };
 
-export const exportTeams = `${API_BASE_URL}/export`;
+export const downloadExport = async () => {
+    const response = await api.get('/export', { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'teams_export.xls');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+};
 
 export default api;

@@ -159,8 +159,6 @@ const Register = () => {
                     <SelectContent>
                       <SelectItem value="1">1 member</SelectItem>
                       <SelectItem value="2">2 members</SelectItem>
-                      <SelectItem value="3">3 members</SelectItem>
-                      <SelectItem value="4">4 members</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

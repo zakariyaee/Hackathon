@@ -309,10 +309,6 @@
       </div>
     </div>
 
-    <div class="cta-wrap">
-      <a href="{{ config('app.url') }}/track?code={{ $team->tracking_number }}" class="cta-btn">Suivre ma demande en temps r&eacute;el &rarr;</a>
-    </div>
-
   </div>{{-- end body-card --}}
 
   {{-- FOOTER --}}
@@ -322,7 +318,7 @@
       <span class="dot">&bull;</span>
       <span>📍 ENSA Tétouan</span>
       <span class="dot">&bull;</span>
-      <span>🏆 17 500 MAD en prix</span>
+      <span>🏆 5 000 MAD en prix</span>
     </div>
     <div class="footer-divider"></div>
     <p>

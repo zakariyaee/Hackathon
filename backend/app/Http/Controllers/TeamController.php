@@ -14,18 +14,33 @@ class TeamController extends Controller
 {
     public function index()
     {
-        return Team::latest()->get();
+        return Team::latest()->paginate(10);
     }
 
     public function store(Request $request)
     {
+        $ip = $request->ip();
+
+        // Check if this IP has already registered 3 times
+        $registrationCount = Team::where('ip_address', $ip)->count();
+
+        if ($registrationCount >= 3) {
+            \Log::channel('security')->warning("Security Alert: IP address $ip attempted a 4th registration.");
+            return response()->json([
+                'message' => "Désolé, vous avez déjà atteint la limite d'inscriptions autorisées (3) pour cette adresse IP."
+            ], 403);
+        }
+
         $validated = $request->validate([
             'teamName'    => 'required|string|unique:teams,team_name',
-            'memberCount' => 'required|integer|min:1|max:4',
+            'memberCount' => 'required|integer|min:1|max:2',
             'projectIdea' => 'required|string',
             'leaderName'  => 'required|string',
             'email'       => 'required|email|unique:teams,email',
             'phone'       => 'required|string',
+        ], [
+            'email.unique' => 'Cet email est déjà utilisé pour une inscription.',
+            'memberCount.max' => 'Le nombre maximum de membres par équipe est de 2.',
         ]);
 
         $trackingNumber = $this->generateTrackingNumber();
@@ -37,6 +52,7 @@ class TeamController extends Controller
             'leader_name'     => $validated['leaderName'],
             'email'           => $validated['email'],
             'phone'           => $validated['phone'],
+            'ip_address'      => $ip,
             'status'          => 'pending',
             'tracking_number' => $trackingNumber,
         ]);
@@ -103,30 +119,40 @@ class TeamController extends Controller
     public function export()
     {
         $teams = Team::all();
-        $csvHeader = ['ID', 'Team Name', 'Members', 'Project Idea', 'Leader', 'Email', 'Phone', 'Status', 'Date'];
+        
+        $output = "
+        <table border='1'>
+            <tr>
+                <th style='background-color: #63b3ed; color: white;'>ID</th>
+                <th style='background-color: #63b3ed; color: white;'>Nom de l'équipe</th>
+                <th style='background-color: #63b3ed; color: white;'>Membres</th>
+                <th style='background-color: #63b3ed; color: white;'>Sujet du projet</th>
+                <th style='background-color: #63b3ed; color: white;'>Chef d'équipe</th>
+                <th style='background-color: #63b3ed; color: white;'>Email</th>
+                <th style='background-color: #63b3ed; color: white;'>Téléphone</th>
+                <th style='background-color: #63b3ed; color: white;'>Statut</th>
+                <th style='background-color: #63b3ed; color: white;'>Date d'inscription</th>
+            </tr>";
 
-        $callback = function() use ($teams, $csvHeader) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $csvHeader);
-            foreach ($teams as $team) {
-                fputcsv($file, [
-                    $team->id,
-                    $team->team_name,
-                    $team->member_count,
-                    $team->project_idea,
-                    $team->leader_name,
-                    $team->email,
-                    $team->phone,
-                    $team->status,
-                    $team->created_at,
-                ]);
-            }
-            fclose($file);
-        };
+        foreach ($teams as $timeout) {
+            $output .= "
+            <tr>
+                <td>{$timeout->id}</td>
+                <td>{$timeout->team_name}</td>
+                <td>{$timeout->member_count}</td>
+                <td>{$timeout->project_idea}</td>
+                <td>{$timeout->leader_name}</td>
+                <td>{$timeout->email}</td>
+                <td>{$timeout->phone}</td>
+                <td>{$timeout->status}</td>
+                <td>{$timeout->created_at}</td>
+            </tr>";
+        }
+        $output .= "</table>";
 
-        return Response::stream($callback, 200, [
-            'Content-type'        => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=teams_export.csv',
+        return Response::make($output, 200, [
+            'Content-type'        => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'attachment; filename=teams_export.xls',
             'Pragma'              => 'no-cache',
             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
             'Expires'             => '0',

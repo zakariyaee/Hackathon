@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Users, Download, Loader2, PieChart, LogOut, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Search, Users, Download, Loader2, PieChart, LogOut, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { fetchTeams, getStats, exportTeams, logout, updateTeamStatus } from "@/lib/api";
+import { fetchTeams, getStats, downloadExport, logout, updateTeamStatus } from "@/lib/api";
 
 interface Registration {
   id: number;
@@ -40,16 +40,22 @@ const StatusBadge = ({ status }: { status: Registration["status"] }) => {
 
 const Admin = () => {
   const [teams, setTeams] = useState<Registration[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [stats, setStats] = useState<Stats | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const { toast } = useToast();
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (page = 1) => {
+    setIsLoading(true);
     try {
-      const [teamsData, statsData] = await Promise.all([fetchTeams(), getStats()]);
-      setTeams(teamsData);
+      const [teamsResponse, statsData] = await Promise.all([fetchTeams(page), getStats()]);
+      setTeams(teamsResponse.data);
+      setLastPage(teamsResponse.last_page);
+      setCurrentPage(teamsResponse.current_page);
       setStats(statsData);
     } catch (error) {
       toast({ title: "Erreur", description: "Impossible de charger les données.", variant: "destructive" });
@@ -58,7 +64,7 @@ const Admin = () => {
     }
   }, [toast]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => { loadData(currentPage); }, [loadData, currentPage]);
 
   const filteredTeams = useMemo(() =>
     teams.filter((t) =>
@@ -83,7 +89,17 @@ const Admin = () => {
     }
   };
 
-  const handleExport = () => window.open(exportTeams, "_blank");
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await downloadExport();
+      toast({ title: "Succès", description: "Le fichier Excel a été généré." });
+    } catch {
+      toast({ title: "Erreur", description: "L'exportation a échoué.", variant: "destructive" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
   const handleLogout  = () => { logout(); window.location.href = "/login"; };
 
   return (
@@ -119,9 +135,9 @@ const Admin = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" onClick={handleExport} disabled={teams.length === 0}>
-              <Download className="h-4 w-4 mr-2" />
-              Export CSV
+            <Button variant="outline" onClick={handleExport} disabled={teams.length === 0 || isExporting}>
+              {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+              Excel (.xls)
             </Button>
           </div>
         </div>
@@ -258,6 +274,35 @@ const Admin = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {lastPage > 1 && (
+          <div className="flex items-center justify-between mt-6 glass-card p-4 rounded-xl border-border/50">
+            <div className="text-sm text-muted-foreground">
+              Page <span className="font-bold text-foreground">{currentPage}</span> sur <span className="font-bold text-foreground">{lastPage}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1 || isLoading}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Précédent
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(lastPage, prev + 1))}
+                disabled={currentPage === lastPage || isLoading}
+              >
+                Suivant
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

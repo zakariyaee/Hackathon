@@ -361,9 +361,7 @@
       Si vous pensez qu'il s'agit d'une erreur ou souhaitez des précisions, n'hésitez pas à nous contacter.
     </p>
 
-    <div class="cta-wrap">
-      <a href="mailto:zelallouche@gmail.com" class="cta-btn rejected">Nous contacter &rarr;</a>
-    </div>
+
 
     @endif
 
@@ -376,7 +374,7 @@
       <span class="dot">&bull;</span>
       <span>📍 ENSA Tétouan</span>
       <span class="dot">&bull;</span>
-      <span>🏆 17 500 MAD en prix</span>
+      <span>🏆 5 000 MAD en prix</span>
     </div>
     <div class="footer-divider"></div>
     <p>

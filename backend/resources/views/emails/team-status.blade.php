@@ -29,9 +29,7 @@ Nous vous informons que l'inscription de votre équipe **{{ $team->team_name }}*
 
 Si vous pensez qu'il s'agit d'une erreur ou si vous souhaitez plus d'informations, n'hésitez pas à nous contacter directement.
 
-@component('mail::button', ['url' => '#', 'color' => 'red'])
-Contactez-nous
-@endcomponent
+
 
 @else
 Merci de votre intérêt pour le Code Wars Hackathon 2026. Votre demande est actuellement **en cours de traitement**.

@@ -4,6 +4,7 @@ import { CalendarDays, MapPin, Target, Clock, Users, Trophy, Award, Medal, Downl
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import heroImage from "@/assets/hero-hackathon.jpg";
+import guidePdf from "@/assets/Guide_CodeWars_Hackathon2026.pdf";
 
 const Index = () => {
   return (
@@ -66,10 +67,12 @@ const Index = () => {
                   <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button variant="hero-outline" size="lg" className="text-base px-8 text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10">
-                <Download className="h-4 w-4 mr-2" />
-                Download Hackathon Guide
-              </Button>
+              <a href={guidePdf} download="Guide_CodeWars_Hackathon2026.pdf">
+                <Button variant="hero-outline" size="lg" className="text-base px-8 text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Hackathon Guide
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -78,16 +81,13 @@ const Index = () => {
 
       {/* Stats Bar */}
       <section className="bg-secondary py-6 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 60px, hsl(var(--secondary-foreground) / 0.1) 60px, hsl(var(--secondary-foreground) / 0.1) 61px)" }} />
-        </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-secondary-foreground">
             {[
               { value: "24h", label: "Of Innovation" },
-              { value: "50+", label: "Teams Expected" },
+              { value: "20+", label: "Teams Expected" },
               { value: "17.5K", label: "MAD in Prizes" },
-              { value: "4", label: "Max per Team" },
+              { value: "2", label: "Max per Team" },
             ].map((stat, i) => (
               <div key={i}>
                 <div className="text-2xl md:text-3xl font-heading font-bold">{stat.value}</div>
@@ -213,7 +213,7 @@ const Index = () => {
                 </div>
                 <div>
                   <div className="text-sm font-semibold">Deadline</div>
-                  <div className="text-sm text-muted-foreground">3 weeks before the event</div>
+                  <div className="text-sm text-muted-foreground">1 week before the event</div>
                 </div>
               </div>
               <div className="flex items-start gap-4 p-5 rounded-xl bg-muted/50 hover:bg-muted/80 transition-colors group">
@@ -222,7 +222,7 @@ const Index = () => {
                 </div>
                 <div>
                   <div className="text-sm font-semibold">Per Team</div>
-                  <div className="text-sm text-muted-foreground">Maximum 4 members</div>
+                  <div className="text-sm text-muted-foreground">Maximum 2 members</div>
                 </div>
               </div>
             </div>
@@ -264,7 +264,7 @@ const Index = () => {
                 <Award className="h-7 w-7 text-silver" />
               </div>
               <div className="text-sm font-medium opacity-70 mb-2 tracking-wider uppercase">2nd Prize</div>
-              <div className="text-3xl font-heading font-bold">5,000</div>
+              <div className="text-3xl font-heading font-bold">3,000</div>
               <div className="text-sm opacity-60 mt-1">MAD</div>
             </div>
 
@@ -277,7 +277,7 @@ const Index = () => {
                   <Trophy className="h-9 w-9 text-gold" />
                 </div>
                 <div className="text-sm font-medium opacity-70 mb-2 tracking-wider uppercase">1st Prize</div>
-                <div className="text-4xl font-heading font-bold">10,000</div>
+                <div className="text-4xl font-heading font-bold">5,000</div>
                 <div className="text-sm opacity-60 mt-1">MAD</div>
               </div>
             </div>
@@ -288,7 +288,7 @@ const Index = () => {
                 <Medal className="h-7 w-7 text-bronze" />
               </div>
               <div className="text-sm font-medium opacity-70 mb-2 tracking-wider uppercase">3rd Prize</div>
-              <div className="text-3xl font-heading font-bold">2,500</div>
+              <div className="text-3xl font-heading font-bold">2,000</div>
               <div className="text-sm opacity-60 mt-1">MAD</div>
             </div>
           </div>
